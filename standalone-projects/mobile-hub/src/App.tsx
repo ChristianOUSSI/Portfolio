@@ -16,7 +16,7 @@ function App() {
             Mobile Hub
           </NavLink>
           <a 
-            href={import.meta.env.VITE_PORTFOLIO_URL || 'https://portfolio0-kappa.vercel.app'}
+            href={import.meta.env.VITE_PORTFOLIO_URL || 'https://oussidev.vercel.app'}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1 text-blue-900 hover:text-blue-700 font-medium text-sm"

@@ -72,7 +72,7 @@ export default function App() {
       <header className="flex flex-col md:flex-row items-start md:items-center justify-between mb-12 gap-6">
         <div className="flex items-center gap-4">
           <a
-            href={import.meta.env.VITE_PORTFOLIO_URL || 'https://portfolio0-kappa.vercel.app'}
+            href={import.meta.env.VITE_PORTFOLIO_URL || 'https://oussidev.vercel.app'}
             target="_blank"
             rel="noopener noreferrer"
             className={`p-2 rounded-full transition-colors ${darkMode ? 'bg-white/10 hover:bg-white/20 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'}`}

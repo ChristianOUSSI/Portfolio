@@ -141,7 +141,7 @@ export default function Contact() {
             className="group"
           >
             <div className="inline-flex items-center gap-3 p-4 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 group-hover:border-blue-300 dark:group-hover:border-blue-600 transition-all">
-              <span className="text-2xl">📱</span>
+              <span className="text-2xl">📞</span>
               <div className="text-left">
                 <p className="text-xs text-gray-500 dark:text-gray-400">Téléphones</p>
                 <p className="text-sm text-blue-900 dark:text-blue-300 font-medium">+237 691 223 916 • 670 008 202 • 659 845 024</p>
@@ -157,7 +157,7 @@ export default function Contact() {
             className="group"
           >
             <div className="inline-flex items-center gap-3 p-4 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 group-hover:border-blue-300 dark:group-hover:border-blue-600 transition-all">
-              <span className="text-2xl">✉️</span>
+              <span className="text-2xl">📧</span>
               <div className="text-left">
                 <p className="text-xs text-gray-500 dark:text-gray-400">Emails</p>
                 <p className="text-sm text-blue-900 dark:text-blue-300 font-medium">Christian.oussi01@gmail.com / wassatherese@gmail.com</p>
@@ -173,7 +173,7 @@ export default function Contact() {
             className="group"
           >
             <div className="inline-flex items-center gap-3 p-4 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 group-hover:border-blue-300 dark:group-hover:border-blue-600 transition-all">
-              <span className="text-2xl">📍</span>
+              <span className="text-2xl">🌍</span>
               <div className="text-left">
                 <p className="text-xs text-gray-500 dark:text-gray-400">Localisation</p>
                 <p className="text-sm text-blue-900 dark:text-blue-300 font-medium">Douala, Cameroun 🇨🇲</p>

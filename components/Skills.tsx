@@ -46,7 +46,7 @@ const categories = [
 ];
 
 // Petit fun fact : J'ai appris Python en automatisant des tâches pour mes jeux, et Unreal Engine en rêvant de créer mon propre RPG !
-const personalNote = "Ces compétences ne sont pas juste des outils – elles sont nées de mes passions. Par exemple, j'ai plongé dans React après avoir vu des sites web 'magiques' comme ceux des mangas en ligne.";
+const personalNote = "Ces compétences ne sont pas juste des outils elles sont nées de mes passions. Par exemple, j'ai plongé dans React après avoir vu des sites web 'magiques' comme ceux des mangas en ligne à l'instar de ANIME-SAMA";
 
 export default function Skills() {
   return (

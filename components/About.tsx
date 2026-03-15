@@ -89,9 +89,9 @@ export default function About() {
                 transition={{ delay: 0.5 }}
                 className="text-center leading-relaxed text-gray-700 dark:text-gray-200"
               >
-                Lecteur passionné de <span className="text-blue-500 font-semibold">mangas comme One Piece et Naruto</span>, j'écris des histoires sur <span className="text-blue-500 font-semibold">Wattpad</span> 
-                pour explorer des mondes imaginaires. Gamer invétéré, j'ai passé des nuits blanches sur <span className="text-blue-500 font-semibold">Minecraft et Zelda</span>, 
-                ce qui m'a appris la persévérance et la résolution de problèmes complexes. Ces hobbies ne sont pas juste des loisirs – ils nourrissent ma créativité en code, 
+                Lecteur passionné de <span className="text-blue-500 font-semibold">mangas comme Dragon Ball, HxH et Naruto</span>, j'écris des histoires sur <span className="text-blue-500 font-semibold">Wattpad</span> 
+                 pour explorer des mondes imaginaires. Gamer invétéré, j'ai passé des nuits blanches sur <span className="text-blue-500 font-semibold">NEOGEO, ZUMA et les GTA </span>, 
+                ce qui m'a appris la persévérance et la résolution de problèmes complexes. Ces hobbies ne sont pas juste des loisirs, ils nourrissent ma créativité en code, 
                 comme quand j'ai créé un mod simple pour un jeu et réalisé que c'était comme déboguer une app !
               </motion.p>
 
@@ -105,11 +105,11 @@ export default function About() {
               >
                 <h3 className="text-lg font-semibold text-blue-700 dark:text-blue-400 mb-3 text-center">Mon parcours personnel</h3>
                 <p className="text-gray-700 dark:text-gray-200 leading-relaxed">
-                  Tout a commencé avec un vieux PC familial sous Windows XP, où j'ai découvert les jeux vidéo. À 12 ans, j'ai essayé de "cracker" un jeu piraté 
-                  (oui, c'était illégal, mais éducatif !) et ça m'a fasciné. J'ai commencé à apprendre le HTML/CSS en modifiant des sites web pour mes amis, 
+                  Tout a commencé avec un vieux Laptop HP sous Windows 7, où j'ai découvert les jeux vidéo. J'ai essayé de "cracker" un jeu PPSSPP en y ajoutant des savedatas pour avoir tous les personnages, 
+                  (oui, c'était illégal et de la triche, mais éducatif !) et ça m'a fasciné. J'ai commencé à apprendre le HTML/CSS en allant sur youtube et en modifiant des sites web, 
                   puis le JavaScript pour créer des petits scripts. Cette curiosité m'a poussé vers l'université au Cameroun, où j'ai plongé dans le développement fullstack. 
-                  Chaque projet, comme ce portfolio, est une aventure – inspiré par les mangas que je dévore et les mondes virtuels que j'explore. 
-                  Et oui, j'ai encore ce vieux PC dans un coin, comme un rappel de mes débuts !
+                  Chaque projet, comme ce portfolio, est une aventure inspiré par les mangas que je dévore et les mondes virtuels que j'explore. 
+                  Et oui, j'ai encore ce vieux PC et je l'utilse toujours au lieu de virtualiser, comme un rappel de mes débuts !
                 </p>
               </motion.div>
             </div>

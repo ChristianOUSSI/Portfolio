@@ -9,19 +9,19 @@ const experiences = [
     role: 'Conseiller Technique',
     company: 'INTELCIA CAMEROUN',
     period: 'Février 2025 – Janvier 2026',
-    description: 'Support technique et conseil en cybersécurité. J\'ai appris à résoudre des problèmes complexes sous pression, comme déboguer un système en panne pendant une nuit blanche.'
+    description: 'Conseiller auprès des clients SFR FRANCE. J\'ai appris à résoudre des problèmes complexes sous pression, tout en orientant une personne au bout du fil vers la meilleure solution un peu comme vider le cache de son ordinateur ou redémarrer sa box internet, mais à une échelle plus humaine !'
   },
   {
     role: 'Commis aux jeux vidéo',
     company: 'FUNTECH-SARL',
     period: 'Septembre 2023 – Mars 2024',
-    description: 'Gestion de stock et conseil clients sur les jeux. Parfait pour combiner ma passion gaming avec le travail – j\'ai même recommandé des titres inspirés de mes mangas préférés !'
+    description: 'Conseiller les clients sur les jeux. Parfait pour combiner ma passion gaming avec le travail j\'ai même recommandé des titres inspirés de mes mangas préférés !'
   },
   {
     role: 'Téléconseiller',
     company: 'IME Bonamoussadi',
     period: 'Juillet 2022 – Octobre 2023',
-    description: 'Support client et résolution de problèmes techniques. Ça m\'a enseigné la communication et la patience, compétences essentielles pour un dev fullstack.'
+    description: 'Présentation de luniversite aux nouveaux bacheliers et à leurs parents au travers d\'appels de relances ou d\'sms. Ça m\'a enseigné la communication et la patience, compétences essentielles pour un dev fullstack.'
   }
 ];
 

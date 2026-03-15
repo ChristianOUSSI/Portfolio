@@ -9,6 +9,7 @@ import { PROJECT_URLS } from '../lib/projectUrls';
 const projects = [
   {
     title: 'Mobile Hub',
+    icon: '🔧',
     description: 'Mon premier pas dans les apps mobiles : gestion de contacts et tâches avec React. Inspiré par mon besoin d\'organiser mes sessions de gaming et d\'écriture.',
     stack: ['React', 'Firebase', 'Tailwind'],
     image: '/projects/mobile-hub.png',
@@ -17,7 +18,8 @@ const projects = [
   },
   {
     title: 'SaaS Admin',
-    description: "Dashboard pour gérer des utilisateurs en SaaS. J'ai adoré implémenter le CRUD et la pagination – ça m'a rappelé organiser mes collections de mangas !",
+    icon: '⚙️',
+    description: "Dashboard pour gérer des utilisateurs en SaaS. J'ai adoré implémenter le CRUD et la pagination ça m'a rappelé d'organiser mes collections de mangas !",
     stack: ['Next.js 15', 'Python', 'REST API'],
     image: '/projects/saas-admin.png',
     link: PROJECT_URLS.saasAdmin,
@@ -25,7 +27,8 @@ const projects = [
   },
   {
     title: 'Blade Quest Prototype',
-    description: 'Prototype de jeu 2D né de mes nuits passées sur Zelda et Naruto. HTML5 Canvas pour créer un petit monde où combattre et collecter – mon rêve de game dev en action !',
+    icon: '⚔️',
+    description: 'Prototype de jeu 2D né de mes nuits passées sur Zelda et PACMAN. HTML5 Canvas m\'a permis de créer un petit monde où combattre et collecter est le seul but car oui c\'est mon rêve de game dev en action !',
     stack: ['HTML5 Canvas', 'JavaScript'],
     image: '/projects/blade-quest.png',
     link: PROJECT_URLS.bladeQuest,
@@ -33,7 +36,8 @@ const projects = [
   },
   {
     title: 'DataDash',
-    description: 'Dashboard analytique inspiré de Power AMC. J\'ai appris Python pour l\'API backend et adoré jouer avec les graphiques – comme analyser les stats de mes parties de jeu !',
+    icon: '📊',
+    description: 'Dashboard analytique inspiré de Power AMC. J\'ai appris Python pour l\'API backend et adoré jouer avec les graphiques comme analyser les stats de mes parties de jeu !',
     stack: ['Python', 'React', 'Recharts'],
     image: '/projects/datadash.png',
     link: PROJECT_URLS.datadash,
@@ -44,6 +48,31 @@ const projects = [
 export default function Projects() {
   return (
     <MotionSection id={slugify('Projets')} className="py-20 px-4 bg-gradient-to-b from-white via-blue-50/30 to-white dark:from-slate-900 dark:via-blue-950/30 dark:to-slate-900 relative overflow-hidden">
+      {/* Tech background elements */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {/* Floating tech dots */}
+        <div className="absolute top-1/4 left-10 w-2 h-2 bg-blue-400/20 rounded-full" />
+        <div className="absolute top-1/3 right-20 w-1 h-1 bg-blue-500/30 rounded-full" />
+        <div className="absolute bottom-1/4 left-1/4 w-3 h-3 bg-blue-300/15 rounded-full" />
+        <div className="absolute bottom-1/3 right-1/3 w-2 h-2 bg-blue-400/20 rounded-full" />
+        
+        {/* Subtle circuit lines */}
+        <div className="absolute top-10 left-1/2 w-px h-20 bg-gradient-to-b from-blue-400/20 to-transparent" />
+        <div className="absolute bottom-10 right-1/4 w-px h-16 bg-gradient-to-t from-blue-400/15 to-transparent" />
+        
+        {/* Grid pattern */}
+        <div 
+          className="absolute inset-0 opacity-[0.02] dark:opacity-[0.03]"
+          style={{
+            backgroundImage: `
+              linear-gradient(rgba(59, 130, 246, 0.5) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(59, 130, 246, 0.5) 1px, transparent 1px)
+            `,
+            backgroundSize: '40px 40px'
+          }}
+        />
+      </div>
+      
       {/* Soft background decoration */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-0 right-1/4 w-96 h-96 bg-blue-100/50 dark:bg-blue-900/20 rounded-full blur-3xl" />
@@ -91,7 +120,10 @@ export default function Projects() {
               </motion.div>
               
               <div className="p-6">
-                <motion.h3 
+                <div className="flex items-center gap-3 mb-3">
+                  {proj.icon && <span className="text-2xl">{proj.icon}</span>}
+                  <motion.h3 
+                    className="font-bold text-xl text-gray-900 dark:text-blue-300 group-hover:text-blue-700 dark:group-hover:text-blue-200 transition-colors" 
                   className="font-bold text-xl mb-2 text-gray-900 dark:text-blue-300 group-hover:text-blue-700 dark:group-hover:text-blue-200 transition-colors"
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}

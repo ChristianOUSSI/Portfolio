@@ -29,7 +29,7 @@ export default function RootLayout({
                 </Link>
               </div>
               <a 
-                href={process.env.NEXT_PUBLIC_PORTFOLIO_URL || 'https://portfolio0-kappa.vercel.app'}
+                href={process.env.NEXT_PUBLIC_PORTFOLIO_URL || 'https://oussidev.vercel.app'}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-gray-700 hover:text-blue-600 font-medium"

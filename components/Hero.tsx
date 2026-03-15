@@ -2,10 +2,14 @@
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { slugify } from '../utils/slugify';
+import ParticleBackground from './ParticleBackground';
 
 export default function Hero() {
   return (
     <section id={slugify('Accueil')} className="relative flex flex-col items-center justify-center min-h-screen text-center px-4 bg-gradient-to-br from-blue-50 via-white to-blue-50 dark:from-slate-900 dark:via-blue-950/50 dark:to-slate-900 overflow-hidden">
+      {/* Tech particle background */}
+      <ParticleBackground />
+      
       {/* Soft background decoration */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-to-br from-blue-200/30 to-transparent rounded-full blur-3xl" />
@@ -52,10 +56,10 @@ export default function Hero() {
             Artisan du Code & des Mondes Virtuels
           </h2>
           <p className="text-base md:text-lg text-gray-700 dark:text-gray-200 mb-4">
-            De l'exploration de mondes virtuels à la création d'apps réelles – je transforme les idées en code, une ligne à la fois.
+            De l'exploration de mondes virtuels à la création d'apps réelles je transforme les idées en code, une ligne à la fois.
           </p>
           <p className="text-sm text-blue-600 dark:text-blue-400 mb-6">
-            Code • Jeux • Mangas • Histoires • Innovation • Fun
+            Code * Jeux * Mangas * Histoires * Innovation * Fun
           </p>
         </motion.div>
 
@@ -73,7 +77,7 @@ export default function Hero() {
             whileTap={{ scale: 0.95 }}
           >
             <span className="flex items-center justify-center gap-2">
-              <span>✨</span>
+              <span>⚡</span>
               <span>Voir mes projets</span>
             </span>
           </motion.a>
@@ -84,7 +88,7 @@ export default function Hero() {
             whileTap={{ scale: 0.95 }}
           >
             <span className="flex items-center justify-center gap-2">
-              <span>💬</span>
+              <span>📡</span>
               <span>Me contacter</span>
             </span>
           </motion.a>

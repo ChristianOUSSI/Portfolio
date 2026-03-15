@@ -25,18 +25,20 @@ const COLORS = ['#3B82F6', '#60A5FA', '#2563EB']
 
 export default function App() {
   const [filter, setFilter] = useState('all')
-  const [darkMode, setDarkMode] = useState(true)
+  const [darkMode, setDarkMode] = useState(false) // Changed to false for testing
   const [salesData, setSalesData] = useState(defaultSales)
   const [userData, setUserData] = useState(defaultUsers)
 
   useEffect(() => {
+    console.log('DataDash loaded, darkMode:', darkMode)
     fetch('/api/data')
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
+        console.log('API data:', data)
         if (data?.sales) setSalesData(data.sales)
         if (data?.users) setUserData(data.users)
       })
-      .catch(() => {})
+      .catch((err) => console.log('API error:', err))
   }, [])
 
   const filteredSales = salesData.filter((d) => filter === 'all' || d.month.includes(filter))
@@ -67,23 +69,28 @@ export default function App() {
   const textMuted = darkMode ? 'text-white/70' : 'text-gray-600'
 
   return (
-    <div className={`min-h-screen p-8 max-w-7xl mx-auto transition-colors duration-300 ${bgGradient}`}>
+    <div style={{ minHeight: '100vh', padding: '32px', maxWidth: '1280px', margin: '0 auto', background: darkMode ? 'linear-gradient(to bottom right, #1e293b, #334155)' : 'linear-gradient(to bottom right, #f3f4f6, #ffffff)' }}>
+      {/* Debug element */}
+      <div style={{ position: 'fixed', top: 0, left: 0, background: 'red', color: 'white', padding: '10px', zIndex: 9999 }}>
+        DataDash Loaded - Dark: {darkMode ? 'Yes' : 'No'}
+      </div>
+      
       {/* Header */}
-      <header className="flex flex-col md:flex-row items-start md:items-center justify-between mb-12 gap-6">
-        <div className="flex items-center gap-4">
+      <header style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', marginBottom: '48px', gap: '24px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <a
             href={import.meta.env.VITE_PORTFOLIO_URL || 'https://oussidev.vercel.app'}
             target="_blank"
             rel="noopener noreferrer"
-            className={`p-2 rounded-full transition-colors ${darkMode ? 'bg-white/10 hover:bg-white/20 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'}`}
+            style={{ padding: '8px', borderRadius: '50%', background: darkMode ? 'rgba(255,255,255,0.1)' : '#e5e7eb', color: darkMode ? 'white' : '#374151' }}
           >
-            <ArrowLeft size={24} />
+            ←
           </a>
           <div>
-            <h1 className={`text-5xl font-bold bg-clip-text text-transparent mb-2 ${darkMode ? 'bg-gradient-to-r from-white to-gray-200' : 'bg-gradient-to-r from-gray-800 to-gray-600'}`}>
+            <h1 style={{ fontSize: '48px', fontWeight: 'bold', background: darkMode ? 'linear-gradient(to right, white, #e2e8f0)' : 'linear-gradient(to right, #1f2937, #4b5563)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', marginBottom: '8px' }}>
               DataDash
             </h1>
-            <p className={`text-xl ${darkMode ? 'text-white/80' : 'text-gray-600'}`}>Dashboard analytique interactif (mock Power AMC)</p>
+            <p style={{ fontSize: '20px', color: darkMode ? 'rgba(255,255,255,0.8)' : '#6b7280' }}>Dashboard analytique interactif (mock Power AMC)</p>
           </div>
         </div>
         

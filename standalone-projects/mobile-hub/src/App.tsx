@@ -7,7 +7,7 @@ import './App.css'
 
 function App() {
   return (
-    <Router basename={import.meta.env.VITE_STANDALONE === 'true' ? '' : '/mobile-hub'}>
+    <Router>
       <div className="min-h-screen bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700">
         <header className="bg-white/80 backdrop-blur-md shadow-lg p-4 flex items-center justify-between">
           <NavLink to="/" className="flex items-center gap-2 font-bold text-xl text-blue-900">

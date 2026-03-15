@@ -18,13 +18,17 @@ interface Contact {
 interface Task {
   id: string
   title: string
+  description?: string
   completed: boolean
+  dueDate?: string
 }
 
 interface Note {
   id: string
   title: string
   content: string
+  color?: string
+  pinned?: boolean
   createdAt: string
 }
 
@@ -95,7 +99,7 @@ export const tasksStorage = {
       const snap = await getDocs(collection(db, 'tasks'))
       return snap.docs.map((d) => {
         const data = d.data() as Partial<Task>
-        return { id: d.id, title: data.title || '', completed: data.completed || false }
+        return { id: d.id, title: data.title || '', description: data.description || '', completed: data.completed || false, dueDate: data.dueDate || '' }
       })
     }
     return getLocal(TASKS_KEY)
@@ -139,7 +143,7 @@ export const notesStorage = {
       const snap = await getDocs(collection(db, 'notes'))
       return snap.docs.map((d) => {
         const data = d.data() as Partial<Note>
-        return { id: d.id, title: data.title || '', content: data.content || '', createdAt: data.createdAt || '' }
+        return { id: d.id, title: data.title || '', content: data.content || '', color: data.color || '#FBBF24', pinned: data.pinned || false, createdAt: data.createdAt || '' }
       })
     }
     return getLocal(NOTES_KEY)

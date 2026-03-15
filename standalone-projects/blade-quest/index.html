@@ -7,7 +7,7 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { background: linear-gradient(135deg, #1e3c72, #2a5298); font-family: 'Arial', sans-serif; color: white; overflow: hidden; }
-    canvas { display: block; background: linear-gradient(to bottom, #60A5FA 0%, #3B82F6 100%); border: 4px solid #93C5FD; border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+    canvas { display: block; background: linear-gradient(to bottom, #60A5FA 0%, #3B82F6 100%); border: 4px solid #93C5FD; border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); max-width: 100%; height: auto; }
     .ui { position: absolute; top: 20px; left: 20px; z-index: 100; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); }
     .score { font-size: 24px; font-weight: bold; margin-bottom: 10px; }
     .health { display: flex; gap: 8px; margin-bottom: 10px; }
@@ -18,6 +18,21 @@
     button:hover { transform: scale(1.05); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
     .footer { position: absolute; bottom: 20px; right: 20px; opacity: 0.8; }
     a { color: #93C5FD; text-decoration: none; }
+
+    /* Mobile controls */
+    .mobile-controls { display: none; position: absolute; bottom: 20px; left: 20px; z-index: 100; }
+    .control-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 120px; }
+    .control-btn { width: 40px; height: 40px; background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.3); border-radius: 8px; color: white; font-size: 18px; font-weight: bold; display: flex; align-items: center; justify-content: center; touch-action: none; }
+    .control-btn:active { background: rgba(255,255,255,0.4); transform: scale(0.95); }
+    .attack-btn { position: absolute; bottom: 20px; right: 20px; width: 60px; height: 60px; background: linear-gradient(45deg, #EF4444, #F87171); border: none; border-radius: 50%; color: white; font-size: 24px; font-weight: bold; touch-action: none; }
+    .attack-btn:active { transform: scale(0.9); }
+
+    @media (max-width: 768px) {
+      .ui { top: 10px; left: 10px; padding: 15px; font-size: 14px; }
+      .mobile-controls { display: block; }
+      canvas { width: 100%; height: 60vh; object-fit: contain; }
+      .footer { bottom: 100px; right: 10px; }
+    }
   </style>
 </head>
 <body>
@@ -29,9 +44,26 @@
       <span class="heart" id="heart3"></span>
     </div>
     <div id="powerupStatus" class="powerup" style="display:none;"></div>
-    <div style="font-size:14px; margin-top:8px; opacity:0.8;">WASD / Flèches: Bouger | ESPACE: Attaquer</div>
+    <div style="font-size:14px; margin-top:8px; opacity:0.8;">WASD / Flèches / Boutons: Bouger | ESPACE / Bouton ⚔️: Attaquer</div>
     <button onclick="resetGame()">↻ Recommencer</button>
   </div>
+
+  <!-- Mobile Controls -->
+  <div class="mobile-controls">
+    <div class="control-pad">
+      <div></div>
+      <button class="control-btn" id="up-btn">↑</button>
+      <div></div>
+      <button class="control-btn" id="left-btn">←</button>
+      <div></div>
+      <button class="control-btn" id="right-btn">→</button>
+      <div></div>
+      <button class="control-btn" id="down-btn">↓</button>
+      <div></div>
+    </div>
+  </div>
+  <button class="attack-btn" id="attack-btn">⚔️</button>
+
   <canvas id="gameCanvas" width="1200" height="700"></canvas>
   <div class="footer">
     <a href="https://oussidev.vercel.app" target="_blank" rel="noopener noreferrer" title="Retour au portfolio">← Portfolio</a>
@@ -61,6 +93,46 @@
 
     window.addEventListener('keydown', (e) => keys[e.code] = true)
     window.addEventListener('keyup', (e) => keys[e.code] = false)
+
+    // Mobile controls
+    const upBtn = document.getElementById('up-btn')
+    const downBtn = document.getElementById('down-btn')
+    const leftBtn = document.getElementById('left-btn')
+    const rightBtn = document.getElementById('right-btn')
+    const attackBtn = document.getElementById('attack-btn')
+
+    // Touch events for mobile controls
+    upBtn.addEventListener('touchstart', (e) => { e.preventDefault(); keys['ArrowUp'] = true })
+    upBtn.addEventListener('touchend', (e) => { e.preventDefault(); keys['ArrowUp'] = false })
+    downBtn.addEventListener('touchstart', (e) => { e.preventDefault(); keys['ArrowDown'] = true })
+    downBtn.addEventListener('touchend', (e) => { e.preventDefault(); keys['ArrowDown'] = false })
+    leftBtn.addEventListener('touchstart', (e) => { e.preventDefault(); keys['ArrowLeft'] = true })
+    leftBtn.addEventListener('touchend', (e) => { e.preventDefault(); keys['ArrowLeft'] = false })
+    rightBtn.addEventListener('touchstart', (e) => { e.preventDefault(); keys['ArrowRight'] = true })
+    rightBtn.addEventListener('touchend', (e) => { e.preventDefault(); keys['ArrowRight'] = false })
+    attackBtn.addEventListener('touchstart', (e) => { e.preventDefault(); keys['Space'] = true })
+    attackBtn.addEventListener('touchend', (e) => { e.preventDefault(); keys['Space'] = false })
+
+    // Make canvas responsive (CSS only, keep internal dimensions)
+    function resizeCanvas() {
+      const maxWidth = Math.min(window.innerWidth - 40, 1200)
+      const maxHeight = Math.min(window.innerHeight - 200, 700)
+      const aspectRatio = 1200 / 700
+      
+      let newWidth = maxWidth
+      let newHeight = maxWidth / aspectRatio
+      
+      if (newHeight > maxHeight) {
+        newHeight = maxHeight
+        newWidth = maxHeight * aspectRatio
+      }
+      
+      canvas.style.width = newWidth + 'px'
+      canvas.style.height = newHeight + 'px'
+    }
+
+    window.addEventListener('resize', resizeCanvas)
+    resizeCanvas()
 
     // Update hearts display
     function updateHearts() {

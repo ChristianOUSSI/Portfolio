@@ -8,6 +8,26 @@ import {
   doc,
 } from 'firebase/firestore'
 
+interface Contact {
+  id: string
+  name: string
+  email: string
+  phone?: string
+}
+
+interface Task {
+  id: string
+  title: string
+  completed: boolean
+}
+
+interface Note {
+  id: string
+  title: string
+  content: string
+  createdAt: string
+}
+
 const CONTACTS_KEY = 'contacts'
 const TASKS_KEY = 'tasks'
 const NOTES_KEY = 'notes'
@@ -46,24 +66,24 @@ export const contactsStorage = {
     setLocal(CONTACTS_KEY, all)
     return item
   },
-  async update(id: string, data: Partial<{ name: string; email: string; phone: string }>) {
+  async update(id: string, data: Partial<Contact>) {
     if (hasFirebase && db) {
       await updateDoc(doc(db, 'contacts', id), data)
       return { id, ...data }
     }
-    const all = getLocal(CONTACTS_KEY)
-    const i = all.findIndex((c: any) => c.id === id)
+    const all = getLocal<Contact>(CONTACTS_KEY)
+    const i = all.findIndex((c) => c.id === id)
     if (i >= 0) {
-      all[i] = { ...all[i], ...data }
+      all[i] = { ...all[i], ...data } as Contact
       setLocal(CONTACTS_KEY, all)
     }
-    return { id, ...data }
+    return { id, ...data } as Contact
   },
   async delete(id: string) {
     if (hasFirebase && db) {
       await deleteDoc(doc(db, 'contacts', id))
     } else {
-      setLocal(CONTACTS_KEY, getLocal(CONTACTS_KEY).filter((c: any) => c.id !== id))
+      setLocal(CONTACTS_KEY, getLocal<Contact>(CONTACTS_KEY).filter((c) => c.id !== id))
     }
   },
 }
@@ -74,8 +94,8 @@ export const tasksStorage = {
     if (hasFirebase && db) {
       const snap = await getDocs(collection(db, 'tasks'))
       return snap.docs.map((d) => {
-        const data = d.data()
-        return { id: d.id, title: data.title || '', description: data.description || '', completed: data.completed || false, dueDate: data.dueDate || '' }
+        const data = d.data() as Partial<Task>
+        return { id: d.id, title: data.title || '', completed: data.completed || false }
       })
     }
     return getLocal(TASKS_KEY)
@@ -95,8 +115,8 @@ export const tasksStorage = {
     if (hasFirebase && db) {
       await updateDoc(doc(db, 'tasks', id), { completed })
     } else {
-      const all = getLocal(TASKS_KEY)
-      const i = all.findIndex((t: any) => t.id === id)
+      const all = getLocal<Task>(TASKS_KEY)
+      const i = all.findIndex((t) => t.id === id)
       if (i >= 0) {
         all[i].completed = completed
         setLocal(TASKS_KEY, all)
@@ -107,7 +127,7 @@ export const tasksStorage = {
     if (hasFirebase && db) {
       await deleteDoc(doc(db, 'tasks', id))
     } else {
-      setLocal(TASKS_KEY, getLocal(TASKS_KEY).filter((t: any) => t.id !== id))
+      setLocal(TASKS_KEY, getLocal<Task>(TASKS_KEY).filter((t) => t.id !== id))
     }
   },
 }
@@ -118,8 +138,8 @@ export const notesStorage = {
     if (hasFirebase && db) {
       const snap = await getDocs(collection(db, 'notes'))
       return snap.docs.map((d) => {
-        const data = d.data()
-        return { id: d.id, title: data.title || '', content: data.content || '', color: data.color || '#FBBF24', pinned: data.pinned || false, createdAt: data.createdAt || '' }
+        const data = d.data() as Partial<Note>
+        return { id: d.id, title: data.title || '', content: data.content || '', createdAt: data.createdAt || '' }
       })
     }
     return getLocal(NOTES_KEY)
@@ -135,14 +155,14 @@ export const notesStorage = {
     setLocal(NOTES_KEY, all)
     return item
   },
-  async update(id: string, data: Partial<{ title: string; content: string; color: string; pinned: boolean }>) {
+  async update(id: string, data: Partial<Note>) {
     if (hasFirebase && db) {
       await updateDoc(doc(db, 'notes', id), data)
     } else {
-      const all = getLocal(NOTES_KEY)
-      const i = all.findIndex((n: any) => n.id === id)
+      const all = getLocal<Note>(NOTES_KEY)
+      const i = all.findIndex((n) => n.id === id)
       if (i >= 0) {
-        all[i] = { ...all[i], ...data }
+        all[i] = { ...all[i], ...data } as Note
         setLocal(NOTES_KEY, all)
       }
     }
@@ -151,8 +171,8 @@ export const notesStorage = {
     if (hasFirebase && db) {
       await updateDoc(doc(db, 'notes', id), { pinned })
     } else {
-      const all = getLocal(NOTES_KEY)
-      const i = all.findIndex((n: any) => n.id === id)
+      const all = getLocal<Note>(NOTES_KEY)
+      const i = all.findIndex((n) => n.id === id)
       if (i >= 0) {
         all[i].pinned = pinned
         setLocal(NOTES_KEY, all)
@@ -163,7 +183,7 @@ export const notesStorage = {
     if (hasFirebase && db) {
       await deleteDoc(doc(db, 'notes', id))
     } else {
-      setLocal(NOTES_KEY, getLocal(NOTES_KEY).filter((n: any) => n.id !== id))
+      setLocal(NOTES_KEY, getLocal<Note>(NOTES_KEY).filter((n) => n.id !== id))
     }
   },
 }

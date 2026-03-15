@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { BrowserRouter as Router, Routes, Route, Link, NavLink } from 'react-router-dom'
 import { User, CheckSquare, Home as HomeIcon, StickyNote } from 'lucide-react'
 import Contacts from './pages/Contacts'

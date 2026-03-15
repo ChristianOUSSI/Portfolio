@@ -123,15 +123,15 @@ export default function Projects() {
                 <div className="flex items-center gap-3 mb-3">
                   {proj.icon && <span className="text-2xl">{proj.icon}</span>}
                   <motion.h3 
-                    className="font-bold text-xl text-gray-900 dark:text-blue-300 group-hover:text-blue-700 dark:group-hover:text-blue-200 transition-colors" 
-                  className="font-bold text-xl mb-2 text-gray-900 dark:text-blue-300 group-hover:text-blue-700 dark:group-hover:text-blue-200 transition-colors"
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: idx * 0.1 + 0.1 }}
-                >
-                  {proj.title}
-                </motion.h3>
+                    className="font-bold text-xl mb-2 text-gray-900 dark:text-blue-300 group-hover:text-blue-700 dark:group-hover:text-blue-200 transition-colors"
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: idx * 0.1 + 0.1 }}
+                  >
+                    {proj.title}
+                  </motion.h3>
+                </div>
                 <p className="mb-4 text-gray-700 dark:text-gray-200 text-sm leading-relaxed">{proj.description}</p>
                 
                 <div className="flex flex-wrap gap-2 mb-4">

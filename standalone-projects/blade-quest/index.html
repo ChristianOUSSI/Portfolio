@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blade Quest Prototype</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: linear-gradient(135deg, #1e3c72, #2a5298); font-family: 'Arial', sans-serif; color: white; overflow: hidden; }
+    canvas { display: block; background: linear-gradient(to bottom, #60A5FA 0%, #3B82F6 100%); border: 4px solid #93C5FD; border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+    .ui { position: absolute; top: 20px; left: 20px; z-index: 100; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); }
+    .score { font-size: 24px; font-weight: bold; margin-bottom: 10px; }
+    .health { display: flex; gap: 8px; margin-bottom: 10px; }
+    .heart { width: 24px; height: 24px; background: #EF4444; border-radius: 50%; display: inline-block; box-shadow: 0 0 10px rgba(239,68,68,0.5); transition: all 0.3s; }
+    .heart.empty { background: #374151; box-shadow: none; }
+    .powerup { font-size: 14px; margin-top: 8px; padding: 6px 12px; background: rgba(147,51,234,0.3); border-radius: 8px; display: inline-block; }
+    button { background: linear-gradient(45deg, #3B82F6, #60A5FA); border: none; padding: 12px 24px; border-radius: 50px; color: white; font-weight: bold; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; margin-top: 10px; }
+    button:hover { transform: scale(1.05); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+    .footer { position: absolute; bottom: 20px; right: 20px; opacity: 0.8; }
+    a { color: #93C5FD; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="ui">
+    <div class="score">Score: <span id="score">0</span></div>
+    <div class="health">
+      <span class="heart" id="heart1"></span>
+      <span class="heart" id="heart2"></span>
+      <span class="heart" id="heart3"></span>
+    </div>
+    <div id="powerupStatus" class="powerup" style="display:none;"></div>
+    <div style="font-size:14px; margin-top:8px; opacity:0.8;">WASD / Flèches: Bouger | ESPACE: Attaquer</div>
+    <button onclick="resetGame()">↻ Recommencer</button>
+  </div>
+  <canvas id="gameCanvas" width="1200" height="700"></canvas>
+  <div class="footer">
+    <a href="https://portfolio0-kappa.vercel.app" target="_blank" rel="noopener noreferrer" title="Retour au portfolio">← Portfolio</a>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas')
+    const ctx = canvas.getContext('2d')
+    const scoreEl = document.getElementById('score')
+    const powerupStatus = document.getElementById('powerupStatus')
+
+    // Game state with health system
+    let score = 0
+    let gameOver = false
+    const player = { 
+      x: 100, y: 350, width: 40, height: 40, 
+      speed: 5, baseSpeed: 5, attacking: false,
+      health: 3, maxHealth: 3, invincible: false, speedBoost: false 
+    }
+    let enemies = []
+    const items = []
+    const powerups = []
+    let powerupTimer = null
+
+    // Keys
+    const keys = {}
+
+    window.addEventListener('keydown', (e) => keys[e.code] = true)
+    window.addEventListener('keyup', (e) => keys[e.code] = false)
+
+    // Update hearts display
+    function updateHearts() {
+      for (let i = 1; i <= 3; i++) {
+        const heart = document.getElementById('heart' + i)
+        if (i <= player.health) {
+          heart.classList.remove('empty')
+        } else {
+          heart.classList.add('empty')
+        }
+      }
+    }
+
+    // Activate power-up effects
+    function activatePowerup(type) {
+      if (type === 'speed') {
+        player.speedBoost = true
+        player.speed = player.baseSpeed * 2
+        powerupStatus.textContent = '⚡ Vitesse x2!'
+        powerupStatus.style.display = 'inline-block'
+        powerupStatus.style.background = 'rgba(234,179,8,0.3)'
+      } else if (type === 'shield') {
+        player.invincible = true
+        powerupStatus.textContent = '🛡️ Bouclier actif!'
+        powerupStatus.style.display = 'inline-block'
+        powerupStatus.style.background = 'rgba(147,51,234,0.3)'
+      }
+      
+      if (powerupTimer) clearTimeout(powerupTimer)
+      powerupTimer = setTimeout(() => {
+        player.speedBoost = false
+        player.speed = player.baseSpeed
+        player.invincible = false
+        powerupStatus.style.display = 'none'
+      }, 5000)
+    }
+
+    // Initialize game
+    function init() {
+      enemies.length = 0
+      items.length = 0
+      powerups.length = 0
+      score = 0
+      player.x = 100
+      player.y = 350
+      player.attacking = false
+      player.health = 3
+      player.invincible = false
+      player.speedBoost = false
+      player.speed = player.baseSpeed
+      gameOver = false
+      if (powerupTimer) clearTimeout(powerupTimer)
+      powerupStatus.style.display = 'none'
+      
+      updateHearts()
+      
+      // Spawn enemies
+      for (let i = 0; i < 5; i++) {
+        enemies.push({
+          x: Math.random() * (canvas.width - 60) + 30,
+          y: Math.random() * (canvas.height - 60) + 30,
+          width: 40, height: 40,
+          speed: 1 + Math.random() * 2
+        })
+      }
+      
+      // Spawn collectible items
+      for (let i = 0; i < 10; i++) {
+        items.push({
+          x: Math.random() * (canvas.width - 30),
+          y: Math.random() * (canvas.height - 30),
+          width: 20, height: 20,
+          collected: false
+        })
+      }
+
+      // Spawn power-ups (new feature)
+      for (let i = 0; i < 3; i++) {
+        powerups.push({
+          x: Math.random() * (canvas.width - 30),
+          y: Math.random() * (canvas.height - 30),
+          width: 25, height: 25,
+          type: Math.random() > 0.5 ? 'speed' : 'shield',
+          collected: false,
+          pulse: 0
+        })
+      }
+      
+      scoreEl.textContent = score.toString()
+    }
+
+    // Handle player taking damage
+    function takeDamage() {
+      if (player.invincible) return false
+      
+      player.health--
+      updateHearts()
+      
+      if (player.health <= 0) {
+        gameOver = true
+        ctx.fillStyle = 'rgba(0,0,0,0.8)'
+        ctx.fillRect(0, 0, canvas.width, canvas.height)
+        ctx.fillStyle = '#EF4444'
+        ctx.font = '48px Arial'
+        ctx.textAlign = 'center'
+        ctx.fillText('Game Over!', canvas.width/2, canvas.height/2)
+        ctx.fillStyle = 'white'
+        ctx.font = '24px Arial'
+        ctx.fillText('Tu as perdu toute ta vie', canvas.width/2, canvas.height/2 + 50)
+        ctx.fillText(`Score final: ${score}`, canvas.width/2, canvas.height/2 + 90)
+        return true
+      }
+      
+      // Brief invincibility after hit
+      player.invincible = true
+      setTimeout(() => player.invincible = false, 1500)
+      return false
+    }
+
+    function update() {
+      if (gameOver) return requestAnimationFrame(update)
+
+      // Player movement
+      if (keys['KeyW'] || keys['ArrowUp']) player.y = Math.max(0, player.y - player.speed)
+      if (keys['KeyS'] || keys['ArrowDown']) player.y = Math.min(canvas.height - player.height, player.y + player.speed)
+      if (keys['KeyA'] || keys['ArrowLeft']) player.x = Math.max(0, player.x - player.speed)
+      if (keys['KeyD'] || keys['ArrowRight']) player.x = Math.min(canvas.width - player.width, player.x + player.speed)
+      if (keys['Space']) {
+        player.attacking = true
+        setTimeout(() => player.attacking = false, 200)
+      }
+
+      // Enemies AI - chase player
+      enemies.forEach(enemy => {
+        const dx = player.x - enemy.x
+        const dy = player.y - enemy.y
+        const dist = Math.sqrt(dx*dx + dy*dy)
+        if (dist > 0) {
+          enemy.x += (dx / dist) * enemy.speed
+          enemy.y += (dy / dist) * enemy.speed
+        }
+      })
+
+      // Attack enemies
+      enemies = enemies.filter(function(enemy) {
+        const dx = player.x - enemy.x
+        const dy = player.y - enemy.y
+        const points = player.speedBoost ? 20 : 10
+        if (player.attacking && Math.abs(dx) < 60 && Math.abs(dy) < 60) {
+          score += points
+          scoreEl.textContent = score.toString()
+          return false
+        }
+        // Collision with damage
+        if (Math.abs(dx) < 40 && Math.abs(dy) < 40) {
+          if (takeDamage()) return false
+        }
+        return true
+      })
+
+      // Collect items
+      items.forEach(item => {
+        if (!item.collected && Math.abs(player.x - item.x) < 30 && Math.abs(player.y - item.y) < 30) {
+          item.collected = true
+          score += 5
+          scoreEl.textContent = score.toString()
+        }
+      })
+
+      // Collect power-ups
+      powerups.forEach(p => {
+        if (!p.collected && Math.abs(player.x - p.x) < 35 && Math.abs(player.y - p.y) < 35) {
+          p.collected = true
+          activatePowerup(p.type)
+        }
+      })
+
+      // Win condition - all items and power-ups collected, all enemies defeated
+      const allItemsCollected = items.every(item => item.collected)
+      const allPowerupsCollected = powerups.every(p => p.collected)
+      if (allItemsCollected && allPowerupsCollected && enemies.length === 0) {
+        gameOver = true
+        ctx.fillStyle = 'rgba(0,0,0,0.8)'
+        ctx.fillRect(0, 0, canvas.width, canvas.height)
+        ctx.fillStyle = '#60A5FA'
+        ctx.font = '48px Arial'
+        ctx.textAlign = 'center'
+        ctx.fillText('Victoire!', canvas.width/2, canvas.height/2)
+        ctx.font = '24px Arial'
+        ctx.fillText(`Score: ${score}`, canvas.width/2, canvas.height/2 + 60)
+        ctx.fillText(`Vies restantes: ${player.health}`, canvas.width/2, canvas.height/2 + 100)
+      }
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+      // Draw power-ups with pulsing effect
+      powerups.forEach(p => {
+        if (!p.collected) {
+          p.pulse += 0.1
+          const pulseSize = Math.sin(p.pulse) * 5
+          ctx.save()
+          ctx.shadowColor = p.type === 'speed' ? '#EAB308' : '#A855F7'
+          ctx.shadowBlur = 20 + pulseSize * 2
+          ctx.fillStyle = p.type === 'speed' ? '#FBBF24' : '#A855F7'
+          
+          // Draw different shapes for each power-up type
+          if (p.type === 'speed') {
+            // Lightning bolt
+            ctx.beginPath()
+            ctx.moveTo(p.x + p.width/2, p.y)
+            ctx.lineTo(p.x + p.width, p.y + p.height/2)
+            ctx.lineTo(p.x + p.width/2, p.y + p.height/2)
+            ctx.lineTo(p.x, p.y + p.height)
+            ctx.lineTo(p.x + p.width/2, p.y + p.height/2)
+            ctx.lineTo(p.x, p.y)
+            ctx.fill()
+          } else {
+            // Shield circle
+            ctx.beginPath()
+            ctx.arc(p.x + p.width/2, p.y + p.height/2, p.width/2 + pulseSize, 0, Math.PI * 2)
+            ctx.fill()
+          }
+          ctx.restore()
+        }
+      })
+
+      // Draw items (blue crystals)
+      ctx.fillStyle = '#93C5FD'
+      items.forEach(item => {
+        if (!item.collected) {
+          ctx.shadowColor = '#60A5FA'
+          ctx.shadowBlur = 20
+          ctx.fillRect(item.x, item.y, item.width, item.height)
+          ctx.shadowBlur = 0
+        }
+      })
+
+      // Draw enemies (blue robots)
+      ctx.fillStyle = '#3B82F6'
+      enemies.forEach(enemy => {
+        ctx.save()
+        ctx.shadowColor = '#2563EB'
+        ctx.shadowBlur = 10
+        ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height)
+        ctx.restore()
+        // Eyes
+        ctx.fillStyle = 'white'
+        ctx.fillRect(enemy.x + 8, enemy.y + 8, 8, 8)
+        ctx.fillRect(enemy.x + 24, enemy.y + 8, 8, 8)
+        ctx.fillStyle = '#1E3A8A'
+        ctx.fillRect(enemy.x + 10, enemy.y + 10, 4, 4)
+        ctx.fillRect(enemy.x + 26, enemy.y + 10, 4, 4)
+      })
+
+      // Draw player
+      let playerColor = player.attacking ? '#93C5FA' : '#2563EB'
+      if (player.invincible) {
+        playerColor = Math.sin(Date.now() / 100) > 0 ? '#FBBF24' : playerColor
+      }
+      if (player.speedBoost) {
+        ctx.strokeStyle = '#EAB308'
+        ctx.lineWidth = 3
+        ctx.strokeRect(player.x - 3, player.y - 3, player.width + 6, player.height + 6)
+      }
+      ctx.fillStyle = playerColor
+      ctx.save()
+      ctx.shadowColor = ctx.fillStyle
+      ctx.shadowBlur = 25
+      ctx.fillRect(player.x, player.y, player.width, player.height)
+      ctx.restore()
+      // Sword attack
+      if (player.attacking) {
+        ctx.fillStyle = '#60A5FA'
+        ctx.fillRect(player.x + player.width, player.y + 10, 30, 20)
+      }
+      // Player details
+      ctx.fillStyle = 'white'
+      ctx.fillRect(player.x + 8, player.y + 8, 24, 24)
+      ctx.fillStyle = '#1E3A8A'
+      ctx.fillRect(player.x + 12, player.y + 12, 16, 16)
+
+      if (gameOver) return
+
+      requestAnimationFrame(() => {
+        update()
+        draw()
+      })
+    }
+
+    function resetGame() {
+      init()
+      draw()
+    }
+
+    init()
+    draw()
+  </script>
+</body>
+</html>

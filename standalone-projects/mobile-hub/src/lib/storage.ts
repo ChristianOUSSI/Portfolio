@@ -1,0 +1,169 @@
+import { db, hasFirebase } from './firebase'
+import {
+  collection,
+  getDocs,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+} from 'firebase/firestore'
+
+const CONTACTS_KEY = 'contacts'
+const TASKS_KEY = 'tasks'
+const NOTES_KEY = 'notes'
+
+// LocalStorage helpers
+function getLocal<T>(key: string): T[] {
+  try {
+    const s = localStorage.getItem(key)
+    return s ? JSON.parse(s) : []
+  } catch {
+    return []
+  }
+}
+
+function setLocal<T>(key: string, data: T[]) {
+  localStorage.setItem(key, JSON.stringify(data))
+}
+
+// Contacts
+export const contactsStorage = {
+  async getAll(): Promise<{ id: string; name: string; email: string; phone: string }[]> {
+    if (hasFirebase && db) {
+      const snap = await getDocs(collection(db, 'contacts'))
+      return snap.docs.map((d) => ({ id: d.id, ...d.data() } as any))
+    }
+    return getLocal(CONTACTS_KEY)
+  },
+  async add(data: { name: string; email: string; phone: string }) {
+    if (hasFirebase && db) {
+      const ref = await addDoc(collection(db, 'contacts'), data)
+      return { id: ref.id, ...data }
+    }
+    const item = { id: crypto.randomUUID(), ...data }
+    const all = getLocal(CONTACTS_KEY)
+    all.push(item)
+    setLocal(CONTACTS_KEY, all)
+    return item
+  },
+  async update(id: string, data: Partial<{ name: string; email: string; phone: string }>) {
+    if (hasFirebase && db) {
+      await updateDoc(doc(db, 'contacts', id), data)
+      return { id, ...data }
+    }
+    const all = getLocal(CONTACTS_KEY)
+    const i = all.findIndex((c: any) => c.id === id)
+    if (i >= 0) {
+      all[i] = { ...all[i], ...data }
+      setLocal(CONTACTS_KEY, all)
+    }
+    return { id, ...data }
+  },
+  async delete(id: string) {
+    if (hasFirebase && db) {
+      await deleteDoc(doc(db, 'contacts', id))
+    } else {
+      setLocal(CONTACTS_KEY, getLocal(CONTACTS_KEY).filter((c: any) => c.id !== id))
+    }
+  },
+}
+
+// Tasks
+export const tasksStorage = {
+  async getAll(): Promise<{ id: string; title: string; description: string; completed: boolean; dueDate: string }[]> {
+    if (hasFirebase && db) {
+      const snap = await getDocs(collection(db, 'tasks'))
+      return snap.docs.map((d) => {
+        const data = d.data()
+        return { id: d.id, title: data.title || '', description: data.description || '', completed: data.completed || false, dueDate: data.dueDate || '' }
+      })
+    }
+    return getLocal(TASKS_KEY)
+  },
+  async add(data: { title: string; description?: string; dueDate?: string }) {
+    if (hasFirebase && db) {
+      const ref = await addDoc(collection(db, 'tasks'), { ...data, completed: false, createdAt: new Date().toISOString() })
+      return { id: ref.id, ...data, completed: false, dueDate: data.dueDate || '' }
+    }
+    const item = { id: crypto.randomUUID(), title: data.title, description: data.description || '', completed: false, dueDate: data.dueDate || '' }
+    const all = getLocal(TASKS_KEY)
+    all.unshift(item)
+    setLocal(TASKS_KEY, all)
+    return item
+  },
+  async toggle(id: string, completed: boolean) {
+    if (hasFirebase && db) {
+      await updateDoc(doc(db, 'tasks', id), { completed })
+    } else {
+      const all = getLocal(TASKS_KEY)
+      const i = all.findIndex((t: any) => t.id === id)
+      if (i >= 0) {
+        all[i].completed = completed
+        setLocal(TASKS_KEY, all)
+      }
+    }
+  },
+  async delete(id: string) {
+    if (hasFirebase && db) {
+      await deleteDoc(doc(db, 'tasks', id))
+    } else {
+      setLocal(TASKS_KEY, getLocal(TASKS_KEY).filter((t: any) => t.id !== id))
+    }
+  },
+}
+
+// Notes
+export const notesStorage = {
+  async getAll(): Promise<{ id: string; title: string; content: string; color: string; pinned: boolean; createdAt: string }[]> {
+    if (hasFirebase && db) {
+      const snap = await getDocs(collection(db, 'notes'))
+      return snap.docs.map((d) => {
+        const data = d.data()
+        return { id: d.id, title: data.title || '', content: data.content || '', color: data.color || '#FBBF24', pinned: data.pinned || false, createdAt: data.createdAt || '' }
+      })
+    }
+    return getLocal(NOTES_KEY)
+  },
+  async add(data: { title: string; content?: string; color?: string }) {
+    if (hasFirebase && db) {
+      const ref = await addDoc(collection(db, 'notes'), { ...data, pinned: false, createdAt: new Date().toISOString() })
+      return { id: ref.id, ...data, pinned: false, createdAt: new Date().toISOString() }
+    }
+    const item = { id: crypto.randomUUID(), title: data.title, content: data.content || '', color: data.color || '#FBBF24', pinned: false, createdAt: new Date().toISOString() }
+    const all = getLocal(NOTES_KEY)
+    all.unshift(item)
+    setLocal(NOTES_KEY, all)
+    return item
+  },
+  async update(id: string, data: Partial<{ title: string; content: string; color: string; pinned: boolean }>) {
+    if (hasFirebase && db) {
+      await updateDoc(doc(db, 'notes', id), data)
+    } else {
+      const all = getLocal(NOTES_KEY)
+      const i = all.findIndex((n: any) => n.id === id)
+      if (i >= 0) {
+        all[i] = { ...all[i], ...data }
+        setLocal(NOTES_KEY, all)
+      }
+    }
+  },
+  async togglePin(id: string, pinned: boolean) {
+    if (hasFirebase && db) {
+      await updateDoc(doc(db, 'notes', id), { pinned })
+    } else {
+      const all = getLocal(NOTES_KEY)
+      const i = all.findIndex((n: any) => n.id === id)
+      if (i >= 0) {
+        all[i].pinned = pinned
+        setLocal(NOTES_KEY, all)
+      }
+    }
+  },
+  async delete(id: string) {
+    if (hasFirebase && db) {
+      await deleteDoc(doc(db, 'notes', id))
+    } else {
+      setLocal(NOTES_KEY, getLocal(NOTES_KEY).filter((n: any) => n.id !== id))
+    }
+  },
+}
